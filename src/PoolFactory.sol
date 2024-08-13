@@ -38,6 +38,7 @@ contract PoolFactory {
                                FUNCTIONS
     //////////////////////////////////////////////////////////////*/
     constructor(address wethToken) {
+        //@audit-info lacks a zero address check
         i_wethToken = wethToken;
     }
 
@@ -48,7 +49,10 @@ contract PoolFactory {
         if (s_pools[tokenAddress] != address(0)) {
             revert PoolFactory__PoolAlreadyExists(tokenAddress);
         }
+        // q what is the .name() reverts?
+        // @audit-info 
         string memory liquidityTokenName = string.concat("T-Swap ", IERC20(tokenAddress).name());
+        // q shouldn't this be token.Symbol()
         string memory liquidityTokenSymbol = string.concat("ts", IERC20(tokenAddress).name());
         TSwapPool tPool = new TSwapPool(tokenAddress, i_wethToken, liquidityTokenName, liquidityTokenSymbol);
         s_pools[tokenAddress] = address(tPool);
